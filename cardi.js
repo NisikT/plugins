@@ -132,8 +132,9 @@
       min-height: 1.2em; \
       pointer-events: none; \
       position: fixed; /* Фіксоване позиціонування */ \
-      right: 1em; /* Відступ з правого боку */ \
-      bottom: 1em; /* Відступ знизу */ \
+      top: 50%; /* Центрування по вертикалі */ \
+      left: 50%; /* Центрування по горизонталі */ \
+      transform: translate(-50%, -50%); /* Переміщує на 50% вліво і вгору для точного центрування */ \
       z-index: 9999; /* Високий рівень відображення */ \
     } \
     .quality-badge { \
@@ -143,14 +144,15 @@
       animation: qb_in 0.4s ease forwards; \
     } \
     .card-quality-badges { \
-      position: fixed; /* Фіксоване позиціонування */ \
-      bottom: 1em; /* Відступ знизу */ \
-      right: 1em; /* Відступ з правого боку */ \
+      position: absolute; \
+      top: 50%; /* Центрування по вертикалі для карток */ \
+      left: 50%; /* Центрування по горизонталі для карток */ \
       display: flex; \
       flex-direction: row; \
       gap: 0.2em; \
       pointer-events: none; \
       z-index: 5; \
+      transform: translate(-50%, -50%); /* Точне центрування іконок на картці */ \
     } \
     .card-quality-badge { \
       height: 0.9em; \
@@ -182,9 +184,10 @@
         height: 1em; \
       } \
       .card-quality-badges { \
-        bottom: 0.25em; \
-        right: 0.25em; \
+        top: 50%; \
+        left: 50%; \
         gap: 0.18em; \
+        transform: translate(-50%, -50%); /* Центрування на мобільних пристроях */ \
       } \
       .card-quality-badge { \
         height: 0.75em; \
