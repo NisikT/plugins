@@ -126,74 +126,79 @@
 
   var style = '<style>\
     .quality-badges-container { \
-      display: flex; \
-      gap: 0.3em; \
-      margin: 0 0 0.4em 0; \
-      min-height: 1.2em; \
-      pointer-events: none; \
-      position: fixed; /* Фіксоване позиціонування */ \
-      top: 50%; /* Центрування по вертикалі */ \
-      left: 50%; /* Центрування по горизонталі */ \
-      transform: translate(-50%, -50%); /* Переміщує на 50% вліво і вгору для точного центрування */ \
-      z-index: 9999; /* Високий рівень відображення */ \
+        display: flex; \
+        gap: 0.3em; \
+        margin: 0 0 0.4em 0; \
+        min-height: 1.2em; \
+        pointer-events: none; \
+        justify-content: center; /* Центрування іконок по горизонталі */ \
+        align-items: center; /* Центрування іконок по вертикалі */ \
     } \
     .quality-badge { \
-      height: 1.2em; \
-      opacity: 0; \
-      transform: translateY(8px); \
-      animation: qb_in 0.4s ease forwards; \
+        display: inline-flex; \
+        align-items: center; \
+        gap: 0.35em; \
+        color: #fff; \
+        white-space: nowrap; \
+        flex-shrink: 0; \
+        height: 1.1em; \
+        opacity: 0; \
+        transform: translateY(8px); \
+        animation: qb_in 0.4s ease forwards; \
     } \
-    .card-quality-badges { \
-      position: absolute; \
-      top: 50%; /* Центрування по вертикалі для карток */ \
-      left: 50%; /* Центрування по горизонталі для карток */ \
-      display: flex; \
-      flex-direction: row; \
-      gap: 0.2em; \
-      pointer-events: none; \
-      z-index: 5; \
-      transform: translate(-50%, -50%); /* Точне центрування іконок на картці */ \
-    } \
-    .card-quality-badge { \
-      height: 0.9em; \
-      opacity: 0; \
-      transform: translateY(5px); \
-      animation: qb_in 0.3s ease forwards; \
+    .qb-unified-block { \
+        display: flex; \
+        flex-wrap: nowrap; \
+        align-items: center; \
+        gap: 0.45em; \
     } \
     @keyframes qb_in { \
-      to { \
-        opacity: 1; \
-        transform: translateY(0); \
-      } \
+        to { \
+            opacity: 1; \
+            transform: translateY(0); \
+        } \
     } \
-    .quality-badge img, .card-quality-badge img { \
-      height: 100%; \
-      width: auto; \
-      display: block; \
+    .quality-badge img { \
+        height: 100%; \
+        width: auto; \
+        display: block; \
     } \
     .card-quality-badge img { \
-      filter: drop-shadow(0 1px 2px #000); \
+        filter: drop-shadow(0 1px 2px #000); \
     } \
-    @media (max-width: 768px) { \
-      .quality-badges-container { \
-        gap: 0.25em; \
-        margin: 0 0 0.35em 0; \
-        min-height: 1em; \
-      } \
-      .quality-badge { \
+    @media screen and (orientation: portrait) { \
+        .quality-badges-container { \
+            width: 100%; \
+            justify-content: center; \
+            display: block !important; \
+            margin: 10px 0; \
+            clear: both; \
+        } \
+        .qb-unified-block { \
+            flex-wrap: wrap; \
+            justify-content: center; \
+            width: 100%; \
+        } \
+    } \
+    .card .qb-unified-block { \
+        position: absolute; \
+        top: 0.5rem; \
+        left: 0.5rem; \
+        z-index: 10; \
+        flex-direction: column; \
+        align-items: flex-start; \
+        gap: 0.2rem; \
+        font-size: 0.7em !important; \
+    } \
+    .card .quality-badge { \
+        background: rgba(0, 0, 0, 0.6); \
+        padding: 2px 4px; \
+        border-radius: 4px; \
         height: 1em; \
-      } \
-      .card-quality-badges { \
-        top: 50%; \
-        left: 50%; \
-        gap: 0.18em; \
-        transform: translate(-50%, -50%); /* Центрування на мобільних пристроях */ \
-      } \
-      .card-quality-badge { \
-        height: 0.75em; \
-      } \
     } \
-  </style>';
+    .card .qb-prefix-icon, .card .qb-text-icon { height: 1em !important; } \
+    .card .qb-text { height: 1em; line-height: 1em; } \
+</style>';
   $('body').append(style);
 
   console.log('[QualityBadges] Запущен');
