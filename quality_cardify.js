@@ -138,4 +138,5 @@
     .quality-badge { height: 1.2em; opacity: 0; transform: translateY(8px); animation: qb_in 0.4s ease forwards; }\
     .card-quality-badges { position: fixed; bottom: 1em; right: 1em; display: flex; flex-direction: row; gap: 0.2em; pointer-events: none; z-index: 5; }\
     .card-quality-badge { height: 0.9em; opacity: 0; transform: translateY(5px); animation: qb_in 0.3s ease forwards; }\
-    @keyframes qb_in { to { opacity:
+    @keyframes qb_in { to { opacity: 1; transform: translateY(0); } }\
+  </style>';
