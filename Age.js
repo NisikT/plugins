@@ -1,33 +1,49 @@
 (function () {
   'use strict';
 
-  // Перевірка на наявність настройки у сховищі Lampa
+  // Ключ для збереження налаштування в сховищі
   const settingKey = 'disable_age_rating';
 
-  // Якщо в налаштуваннях вже є значення для цього параметра
+  // Перевірка на наявність налаштування
   const currentSetting = Lampa.Storage.field(settingKey) || false;
+  console.log('Current Setting:', currentSetting);
 
-  // Додаємо пункт до налаштувань
-  Lampa.Settings.add({
-    name: 'Відключити віковий рейтинг',
-    type: 'switch',
-    value: currentSetting,
-    callback: function (value) {
-      // Зберігаємо стан в сховищі
-      Lampa.Storage.field(settingKey, value);
-      // Оновлюємо відображення вікового рейтингу
-      updateAgeRatingVisibility(value);
-    }
-  });
+  // Додавання плагіну до меню налаштувань
+  try {
+    Lampa.Settings.add({
+      name: 'Відключити віковий рейтинг',
+      type: 'switch',
+      value: currentSetting,
+      callback: function (value) {
+        // Зберігаємо нове значення в сховищі
+        Lampa.Storage.field(settingKey, value);
+        console.log('New Setting:', value);
+        // Оновлюємо видимість вікового рейтингу
+        updateAgeRatingVisibility(value);
+      }
+    });
+  } catch (e) {
+    console.error('Error adding setting:', e);
+  }
 
   // Функція для оновлення видимості вікового рейтингу
   function updateAgeRatingVisibility(isDisabled) {
-    if (isDisabled) {
-      // Сховати віковий рейтинг, якщо відключено
-      $('.card__age-rating').hide();
-    } else {
-      // Показати віковий рейтинг, якщо увімкнено
-      $('.card__age-rating').show();
+    try {
+      if (isDisabled) {
+        // Перевірка на наявність елементів з віковим рейтингом і приховування
+        $('.card__age-rating').each(function() {
+          $(this).hide();
+        });
+        console.log('Age rating is hidden');
+      } else {
+        // Показати віковий рейтинг, якщо опція увімкнена
+        $('.card__age-rating').each(function() {
+          $(this).show();
+        });
+        console.log('Age rating is shown');
+      }
+    } catch (e) {
+      console.error('Error updating age rating visibility:', e);
     }
   }
 
@@ -35,5 +51,4 @@
   updateAgeRatingVisibility(currentSetting);
 
   console.log('[DisableAgeRating] Плагін активовано');
-
 })();
