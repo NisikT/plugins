@@ -192,6 +192,11 @@
         $quality.css(fmt.style);
     }
 
+    function renderQualityInFullView($container, quality) {
+        var fmt = formatQuality(quality);
+        var $block = $('<div class="full-start__status">' + fmt.quality + '</div>');
+        $block.css(fmt.style);
+    }
 
     var requestQueue = {
         queue: [],
