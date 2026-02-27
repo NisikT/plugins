@@ -1,8 +1,8 @@
+//Оригінальний плагін https://github.com/FoxStudio24/lampa/blob/main/Quality/Quality.js
+//Працює при увімкненому парсері 
+
 (function () {
   'use strict';
-
-  var COMPONENT_NAME = 'uator_settings';
-  var STORAGE_PREFIX = 'uator_';
 
   var cardBadgesCache = {};
   var pluginPath = 'https://crowley38.github.io/Icons/';
@@ -19,336 +19,139 @@
     '4.0': pluginPath + '4.0.svg',
     '2.0': pluginPath + '2.0.svg',
     'DUB': pluginPath + 'DUB.svg',
-    'UKR': pluginPath + 'UKR.svg' // Твоя нова іконка
   };
 
-  function getSetting(name, def) {
-    return Lampa.Storage.get(STORAGE_PREFIX + name, def);
-  }
-
-  function getResolutionLabel(width) {
-    var w = parseInt(width || 0);
-    if (w >= 3800) return '4K';
-    if (w >= 2500) return '2K';
-    if (w >= 1900) return 'FHD';
-    if (w >= 1200) return 'HD';
-    return 'SD';
-  }
-
-  function getBestAndPopular(results, movie) {
-    if (!results || !Array.isArray(results)) return { ukr: false };
+  function getBest(results) {
+    var best = { resolution: null, hdr: false, dolbyVision: false, audio: null, dub: false, ukr: false };
+    var resOrder = ['HD', 'FULL HD', '2K', '4K'];
+    var audioOrder = ['2.0', '4.0', '5.1', '7.1'];
     
-    var ukrPattern = /(ukr|ua|ukrainian|українськ|укр|[^a-z]uk[^a-z])/i;
-    var ukrResults = [];
-    var movieYear = parseInt(movie.release_date || movie.first_air_date || movie.year || 0);
-
-    results.forEach(function(item) {
+    var limit = Math.min(results.length, 20);
+    for (var i = 0; i < limit; i++) {
+      var item = results[i];
       var title = (item.Title || '').toLowerCase();
-      
-      if (movieYear > 0) {
-        var yearMatch = title.match(/\b(19|20)\d{2}\b/g);
-        if (yearMatch) {
-          var correctYear = yearMatch.some(function(y) { return Math.abs(parseInt(y) - movieYear) <= 1; });
-          if (!correctYear) return;
-        }
+
+      // Перевірка на українську локалізацію
+      if (title.indexOf('ukr') >= 0 || title.indexOf('укр') >= 0 || title.indexOf('ua') >= 0) {
+          best.ukr = true;
       }
 
-      var titleClean = title.replace(/(укр[а-яієґї]*|ukr[a-z]*|ua|ukrainian)[\s\.\,\_\-\|]*(sub|суб)[a-zа-яієґї]*/ig, '')
-                            .replace(/(sub|суб)[a-zа-яієґї]*[\s\.\,\_\-\|]*(укр[а-яієґї]*|ukr[a-z]*|ua|ukrainian)/ig, '');
+      var foundRes = null;
+      if (title.indexOf('4k') >= 0 || title.indexOf('2160') >= 0 || title.indexOf('uhd') >= 0) foundRes = '4K';
+      else if (title.indexOf('2k') >= 0 || title.indexOf('1440') >= 0) foundRes = '2K';
+      else if (title.indexOf('1080') >= 0 || title.indexOf('fhd') >= 0 || title.indexOf('full hd') >= 0) foundRes = 'FULL HD';
+      else if (title.indexOf('720') >= 0 || title.indexOf('hd') >= 0) foundRes = 'HD';
 
-      var hasUkr = ukrPattern.test(titleClean);
-
-      if (!hasUkr && item.ffprobe && Array.isArray(item.ffprobe)) {
-        hasUkr = item.ffprobe.some(function(s) {
-          if (s.codec_type !== 'audio') return false;
-          var l = (s.tags && s.tags.language ? s.tags.language : '').toLowerCase();
-          var t = (s.tags && s.tags.title ? s.tags.title : '').toLowerCase();
-          return l.indexOf('uk') === 0 || ukrPattern.test(t);
-        });
+      if (foundRes && (!best.resolution || resOrder.indexOf(foundRes) > resOrder.indexOf(best.resolution))) {
+          best.resolution = foundRes;
       }
 
-      if (hasUkr) {
-        var width = 0;
-        if (item.ffprobe) {
-          item.ffprobe.forEach(function(s) {
-            if (s.codec_type === 'video' && s.width) width = Math.max(width, parseInt(s.width));
-          });
-        }
-        if (width === 0) {
-          if (/2160|4k/i.test(title)) width = 3840;
-          else if (/1080|fhd/i.test(title)) width = 1920;
-          else if (/720|hd/i.test(title)) width = 1280;
-          else width = 720;
-        }
-        item.detectedWidth = width;
-        item.seedersCount = parseInt(item.Seeders || 0);
-        ukrResults.push(item);
-      }
-    });
-
-    if (ukrResults.length === 0) return { ukr: false };
-
-    var best = ukrResults.reduce(function(p, c) { return (p.detectedWidth > c.detectedWidth) ? p : c; });
-    var popular = ukrResults.reduce(function(p, c) { return (p.seedersCount > c.seedersCount) ? p : c; });
-    
-    var tech = { hdr: false, dv: false, audio: null };
-    var maxChannels = 0;
-
-    ukrResults.forEach(function(item) {
-      if (item.ffprobe) {
-        item.ffprobe.forEach(function(s) {
-          if (s.codec_type === 'audio' && s.channels) {
-            maxChannels = Math.max(maxChannels, parseInt(s.channels));
+      if (item.ffprobe && Array.isArray(item.ffprobe)) {
+        item.ffprobe.forEach(function(stream) {
+          if (stream.codec_type === 'video') {
+            var h = parseInt(stream.height || 0);
+            var w = parseInt(stream.width || 0);
+            var res = null;
+            if (h >= 2160 || w >= 3840) res = '4K';
+            else if (h >= 1440 || w >= 2560) res = '2K';
+            else if (h >= 1080 || w >= 1920) res = 'FULL HD';
+            else if (h >= 720 || w >= 1280) res = 'HD';
+            
+            if (res && (!best.resolution || resOrder.indexOf(res) > resOrder.indexOf(best.resolution))) {
+              best.resolution = res;
+            }
+            if (stream.side_data_list && JSON.stringify(stream.side_data_list).indexOf('Vision') >= 0) best.dolbyVision = true;
+            if (stream.color_transfer === 'smpte2084' || stream.color_transfer === 'arib-std-b67') best.hdr = true;
+          }
+          if (stream.codec_type === 'audio' && stream.channels) {
+            var ch = parseInt(stream.channels);
+            var aud = (ch >= 8) ? '7.1' : (ch >= 6) ? '5.1' : (ch >= 4) ? '4.0' : '2.0';
+            if (!best.audio || audioOrder.indexOf(aud) > audioOrder.indexOf(best.audio)) best.audio = aud;
           }
         });
       }
-      var t = item.Title.toLowerCase();
-      if (t.match(/7\.1|8ch/)) maxChannels = Math.max(maxChannels, 8);
-      else if (t.match(/5\.1|6ch/)) maxChannels = Math.max(maxChannels, 6);
-      else if (t.match(/2\.0/)) maxChannels = Math.max(maxChannels, 2);
-    });
-
-    if (maxChannels > 0) {
-      tech.audio = (maxChannels >= 8) ? '7.1' : (maxChannels >= 6) ? '5.1' : (maxChannels >= 4) ? '4.0' : '2.0';
+      
+      if (title.indexOf('vision') >= 0 || title.indexOf('dovi') >= 0) best.dolbyVision = true;
+      if (title.indexOf('hdr') >= 0) best.hdr = true;
+      if (title.indexOf('dub') >= 0 || title.indexOf('дубл') >= 0) best.dub = true;
     }
-
-    if (best.ffprobe) {
-      best.ffprobe.forEach(function(s) {
-        if (s.codec_type === 'video') {
-          var side = JSON.stringify(s.side_data_list || []);
-          if (/vision|dovi/i.test(side)) tech.dv = true;
-          if (s.color_transfer === 'smpte2084') tech.hdr = true;
-        }
-      });
-    }
-    var bTitle = best.Title.toLowerCase();
-    if (!tech.dv && /vision|dovi/i.test(bTitle)) tech.dv = true;
-    if (!tech.hdr && /hdr/i.test(bTitle)) tech.hdr = true;
-
-    return { 
-      ukr: true, 
-      bestRes: getResolutionLabel(best.detectedWidth),
-      popRes: getResolutionLabel(popular.detectedWidth),
-      popSeeds: popular.seedersCount, 
-      tech: tech 
-    };
+    if (best.dolbyVision) best.hdr = true;
+    return best;
   }
 
-  function render(container, data, isCard) {
-    container.find('.qb-unified-block').remove();
-    if (!data) return;
+  function createBadgeImg(type, isCard, index) {
+    var iconPath = svgIcons[type];
+    if (!iconPath) return '';
+    var className = isCard ? 'card-quality-badge' : 'quality-badge';
+    var delay = (index * 0.08) + 's';
+    return '<div class="' + className + '" style="animation-delay: ' + delay + '"><img src="' + iconPath + '" draggable="false" oncontextmenu="return false;"></div>';
+  }
 
-    var size = getSetting('rating_size', '0.8em');
-    var saturation = getSetting('saturation', '100%');
-    
-    var block = $('<div class="qb-unified-block" style="font-size: '+size+'"></div>');
-    
-    if (!data.ukr) {
-        var iconHtml = (saturation === '0%') ? '<span class="qb-text-icon">UA</span>' : '<img src="'+icons.none+'" class="qb-prefix-icon" style="filter: saturate('+saturation+')">';
-        block.append('<div class="quality-badge qb-not-found">' + iconHtml + '<span class="qb-text">немає</span></div>');
-    } else {
-      var items = [
-        {i: icons.ua, t: data.bestRes, type: 'ua'},
-        {i: icons.top, t: data.popRes},
-        {i: icons.seeds, t: data.popSeeds}
-      ];
-      if (data.tech.audio) items.push({i: icons.audio, t: data.tech.audio});
-      if (data.tech.dv) items.push({i: icons.dv, t: '', type: 'dv'});
-      if (data.tech.hdr) items.push({i: icons.hdr, t: '', type: 'hdr'});
-      
-      items.forEach(function(it) {
-        var iconHtml = '';
-        if (it.i) {
-            var style = 'filter: saturate('+saturation+');';
-            
-            if (it.type === 'ua' && saturation === '0%') {
-                iconHtml = '<span class="qb-text-icon">UA</span>';
-            } else {
-                if (it.type === 'dv') {
-                    style = 'filter: brightness(0) invert(1);';
-                } else if (it.type === 'hdr') {
-                    style = 'filter: grayscale(1);';
-                }
-                iconHtml = '<img src="'+it.i+'" class="qb-prefix-icon" style="'+style+'">';
-            }
-        }
-        var textHtml = it.t ? '<span class="qb-text">' + it.t + '</span>' : '';
-        block.append('<div class="quality-badge">' + iconHtml + textHtml + '</div>');
-      });
-    }
-    container.append(block);
+  function addCardBadges(card, best) {
+    if (card.find('.card-quality-badges').length) return;
+    var badges = [];
+    // Додаємо прапорець першим у списку
+    if (best.ukr) badges.push(createBadgeImg('UKR', true, badges.length));
+    if (best.resolution) badges.push(createBadgeImg(best.resolution, true, badges.length));
+    if (best.hdr) badges.push(createBadgeImg('HDR', true, badges.length));
+    if (best.audio) badges.push(createBadgeImg(best.audio, true, badges.length));
+    if (best.dub) badges.push(createBadgeImg('DUB', true, badges.length));
+    if (best.dolbyVision) badges.push(createBadgeImg('Dolby Vision', true, badges.length));
+    if (badges.length) card.find('.card__view').append('<div class="card-quality-badges">' + badges.join('') + '</div>');
   }
 
   function processCards() {
-    $('.card:not(.qb-processed)').each(function() {
+    $('.card:not(.qb-processed)').addClass('qb-processed').each(function() {
       var card = $(this);
       var movie = card.data('item');
-      if (movie && movie.id) {
-        card.addClass('qb-processed');
-        var key = movie.id + '_' + (movie.title || movie.name);
-        if (resultsCache[key] && resultsCache[key].ukr) {
-          render(card.find('.card__view'), resultsCache[key], true);
-        } else {
-          Lampa.Parser.get({ search: movie.title || movie.name, movie: movie, page: 1 }, function(res) {
-            if (res && res.Results) {
-              var data = getBestAndPopular(res.Results, movie);
-              if (data.ukr) { resultsCache[key] = data; render(card.find('.card__view'), data, true); }
-            }
-          }, function() { });
-        }
+      if (movie && Lampa.Storage.field('parser_use')) {
+        Lampa.Parser.get({ search: movie.title || movie.name, movie: movie, page: 1 }, function(response) {
+          if (response && response.Results) addCardBadges(card, getBest(response.Results));
+        });
       }
     });
   }
 
   Lampa.Listener.follow('full', function(e) {
-    if (e.type !== 'complite' && e.type !== 'complete') return;
-    
-    var renderTarget = e.object.activity.render();
-    var isPortrait = window.innerHeight > window.innerWidth;
-    
-    var cont = $('.quality-badges-container', renderTarget);
-    if (!cont.length) { 
-        cont = $('<div class="quality-badges-container"></div>'); 
-        
-        if (isPortrait) {
-            var title = $('.full-start-new__title, .full-start__title', renderTarget);
-            title.after(cont);
-        } else {
-            var rateLine = $('.full-start-new__rate-line, .full-start__rate-line', renderTarget);
-            if (rateLine.length) rateLine.append(cont);
-            else $('.full-start__info', renderTarget).append(cont);
-        }
+    if (e.type !== 'complite') return;
+    var details = $('.full-start-new__details');
+    if (details.length) {
+        if (!$('.quality-badges-container').length) details.after('<div class="quality-badges-container"></div>');
+        Lampa.Parser.get({ search: e.data.movie.title || e.data.movie.name, movie: e.data.movie, page: 1 }, function(response) {
+            if (response && response.Results) {
+                var best = getBest(response.Results);
+                var badges = [];
+                if (best.ukr) badges.push(createBadgeImg('UKR', false, badges.length));
+                if (best.resolution) badges.push(createBadgeImg(best.resolution, false, badges.length));
+                if (best.hdr) badges.push(createBadgeImg('HDR', false, badges.length));
+                if (best.audio) badges.push(createBadgeImg(best.audio, false, badges.length));
+                if (best.dub) badges.push(createBadgeImg('DUB', false, badges.length));
+                if (best.dolbyVision) badges.push(createBadgeImg('Dolby Vision', false, badges.length));
+                $('.quality-badges-container').html(badges.join(''));
+            }
+        });
     }
-
-    Lampa.Parser.get({ search: e.data.movie.title || e.data.movie.name, movie: e.data.movie, page: 1 }, function(res) {
-        if (res && res.Results) render(cont, getBestAndPopular(res.Results, e.data.movie), false);
-    }, function() { });
   });
 
-  setInterval(processCards, 2000);
+  setInterval(processCards, 3000);
 
-  function setupSettings() {
-    Lampa.SettingsApi.addComponent({ component: COMPONENT_NAME, name: 'Uator' });
+  var style = '<style>\
+    .quality-badges-container { display: flex; gap: 0.3em; margin: 0 0 0.4em 0; min-height: 1.2em; pointer-events: none; }\
+    .quality-badge { height: 1.2em; opacity: 0; transform: translateY(8px); animation: qb_in 0.4s ease forwards; }\
+    .card-quality-badges { position: absolute; top: 0.3em; right: 0.3em; display: flex; flex-direction: row; gap: 0.2em; pointer-events: none; z-index: 5; }\
+    .card-quality-badge { height: 0.9em; opacity: 0; transform: translateY(5px); animation: qb_in 0.3s ease forwards; }\
+    @keyframes qb_in { to { opacity: 1; transform: translateY(0); } }\
+    .quality-badge img, .card-quality-badge img { height: 100%; width: auto; display: block; }\
+    .card-quality-badge img { filter: drop-shadow(0 1px 2px #000); }\
+    @media (max-width: 768px) {\
+      .quality-badges-container { gap: 0.25em; margin: 0 0 0.35em 0; min-height: 1em; }\
+      .quality-badge { height: 1em; }\
+      .card-quality-badges { top: 0.25em; right: 0.25em; gap: 0.18em; }\
+      .card-quality-badge { height: 0.75em; }\
+    }\
+  </style>';
+  $('body').append(style);
 
-    Lampa.SettingsApi.addParam({
-        component: "interface",
-        param: { name: "uator_entry_btn", type: "static" },
-        field: { name: "Uator", description: "Налаштування відображення UA контенту" },
-        onRender: function (item) { item.on("hover:enter", function () { Lampa.Settings.create(COMPONENT_NAME); }); }
-    });
-
-    Lampa.SettingsApi.addParam({
-        component: COMPONENT_NAME,
-        param: { name: "uator_back", type: "static" },
-        field: { name: "Назад", description: "До інтерфейсу" },
-        onRender: function (item) { item.on("hover:enter", function () { Lampa.Settings.create("interface"); }); }
-    });
-
-    Lampa.SettingsApi.addParam({
-        component: COMPONENT_NAME,
-        param: { 
-            name: STORAGE_PREFIX + 'saturation', 
-            type: 'select', 
-            values: { '100%': '100% (Стандарт)', '75%': '75%', '50%': '50%', '25%': '25%', '0%': '0% (Ч/Б)' }, 
-            default: '100%' 
-        },
-        field: { name: 'Насиченість', description: 'Рівень кольоровості іконок' }
-    });
-
-    Lampa.SettingsApi.addParam({
-        component: COMPONENT_NAME,
-        param: { 
-            name: STORAGE_PREFIX + 'rating_size', 
-            type: 'select', 
-            values: { '0.5em': 'XS', '0.8em': 'S', '1.1em': 'M', '1.5em': 'L', '2.0em': 'XL' }, 
-            default: '0.8em' 
-        },
-        field: { name: 'Розмір значків', description: 'Розмір елементів на картці та в описі' }
-    });
-  }
-
-  if (window.Lampa) setupSettings();
-
-  $('body').append('<style>\
-    /* Хак для приховування дублювання у головному списку налаштувань */\
-    div[data-component="' + COMPONENT_NAME + '"] { display: none !important; }\
-    \
-    .quality-badges-container { \
-        display: flex; \
-        align-items: center; \
-    }\
-    .qb-unified-block { \
-        display: flex; \
-        flex-wrap: nowrap; \
-        align-items: center; \
-        gap: 0.45em; \
-    }\
-    @media screen and (orientation: portrait) { \
-        .quality-badges-container { \
-            width: 100%; \
-            justify-content: center; \
-            display: block !important; \
-            margin: 10px 0; \
-            clear: both; \
-        } \
-        .qb-unified-block { \
-            flex-wrap: wrap; \
-            justify-content: center; \
-            width: 100%; \
-        } \
-    }\
-    .quality-badge { \
-      display: inline-flex; \
-      align-items: center; \
-      gap: 0.35em; \
-      color: #fff; \
-      white-space: nowrap; \
-      flex-shrink: 0; \
-      height: 1.1em; \
-    }\
-    .qb-text { font-weight: bold; line-height: 1.1em; height: 1.1em; display: flex; align-items: center; }\
-    .qb-prefix-icon { \
-        height: 1.1em !important; \
-        width: auto; \
-        display: block; \
-        object-fit: contain; \
-        margin: 0; \
-    }\
-    .qb-text-icon { \
-        height: 1.1em !important; \
-        line-height: 1.1em !important; \
-        font-size: 0.85em !important; \
-        font-weight: 900; \
-        display: inline-flex; \
-        align-items: center; \
-        justify-content: center; \
-        background: #fff; \
-        color: #000; \
-        padding: 0 0.25em; \
-        border-radius: 2px; \
-        box-sizing: border-box; \
-        vertical-align: top; \
-    }\
-    .qb-not-found { opacity: 0.6; }\
-    \
-    .card .qb-unified-block { \
-      position: absolute; \
-      top: 0.5rem; \
-      left: 0.5rem; \
-      z-index: 10; \
-      flex-direction: column; \
-      align-items: flex-start; \
-      gap: 0.2rem; \
-      font-size: 0.7em !important; \
-    }\
-    .card .quality-badge { \
-      background: rgba(0, 0, 0, 0.6); \
-      padding: 2px 4px; \
-      border-radius: 4px; \
-      height: 1em; \
-    }\
-    .card .qb-prefix-icon, .card .qb-text-icon { height: 1em !important; }\
-    .card .qb-text { height: 1em; line-height: 1em; }\
-  </style>');
+  console.log('[QualityBadges] Запущено з підтримкою UKR');
 
 })();
