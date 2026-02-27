@@ -140,15 +140,14 @@
     .quality-badge { height: 1.2em; opacity: 0; transform: translateY(8px); animation: qb_in 0.4s ease forwards; }\
     .card-quality-badges { \
         position: absolute; \
-        bottom: 0.4em; \
-        right: 0.4em; \
-        top: auto; \
-        left: auto; \
+        top: 0.5rem; \
+        left: 0.5rem; \
+        z-index: 10; \
         display: flex; \
-        flex-direction: row; \
-        gap: 0.25em; \
+        flex-direction: column; \
+        align-items: flex-start; \
+        gap: 0.2rem; \
         pointer-events: none; \
-        z-index: 5; \
     }\
     .card-quality-badge { height: 0.9em; opacity: 0; transform: translateY(5px); animation: qb_in 0.3s ease forwards; }\
     @keyframes qb_in { to { opacity: 1; transform: translateY(0); } }\
@@ -157,7 +156,7 @@
     @media (max-width: 768px) {\
       .quality-badges-container { gap: 0.25em; margin: 0 0 0.35em 0; min-height: 1em; }\
       .quality-badge { height: 1em; }\
-      .card-quality-badges { bottom: 0.3em; right: 0.3em; gap: 0.18em; }\
+      .card-quality-badges { top: 0.5rem; left: 0.5rem; gap: 0.2rem; }\
       .card-quality-badge { height: 0.75em; }\
     }\
 </style>';
