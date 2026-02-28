@@ -8,36 +8,33 @@
         Lampa.SettingsApi.addParam({
             component: 'interface',
             param: {
-                name: 'cardify_hide_pg',
+                name: 'hide_pg_cardify',
                 type: 'checkbox',
                 default: false
             },
             field: {
-                name: 'Приховати віковий рейтинг (PG)',
-                description: 'Прибирає 12+, 16+, 18+ у картці Cardify'
+                name: 'Приховати віковий рейтинг (Cardify)',
+                description: 'Прибирає 12+, 16+, 18+ у картці'
             }
         });
 
-        // Слухаємо відкриття будь-якої активності
-        Lampa.Listener.follow('activity', function (e) {
+        // Глобальний спостерігач DOM (працює завжди)
+        const observer = new MutationObserver(function () {
 
-            if (!Lampa.Storage.get('cardify_hide_pg', false)) return;
-            if (!e.object || !e.object.activity) return;
+            if (!Lampa.Storage.get('hide_pg_cardify', false)) return;
 
-            setTimeout(function () {
+            document.querySelectorAll('.full-start__pg').forEach(function (el) {
+                el.style.display = 'none';
+            });
 
-                var render = e.object.activity.render();
-                if (!render) return;
-
-                // Перевіряємо що це саме Cardify
-                if (render.find('.full-start-new').length) {
-                    render.find('.full-start__pg').hide();
-                }
-
-            }, 100);
         });
 
-        console.log('Cardify PG Hider loaded');
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+
+        console.log('Cardify PG Hider (3.1.6) loaded');
     }
 
     if (window.appready) startPlugin();
