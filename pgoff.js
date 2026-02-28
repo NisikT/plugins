@@ -4,39 +4,40 @@
     function startPlugin() {
         if (!window.Lampa) return;
 
-        // Добавляем настройку
+        // Додаємо налаштування
         Lampa.SettingsApi.addParam({
             component: 'interface',
             param: {
-                name: 'hide_pg_rating',
-                type: 'trigger',
+                name: 'cardify_hide_pg',
+                type: 'checkbox',
                 default: false
             },
             field: {
-                name: 'Скрывать возрастной рейтинг (PG)',
-                description: 'Убирает 12+, 16+, 18+ из карточки фильма'
+                name: 'Приховати віковий рейтинг (PG)',
+                description: 'Прибирає 12+, 16+, 18+ у картці Cardify'
             }
         });
 
-        // Слушаем открытие карточки
-        Lampa.Listener.follow('full', function (e) {
+        // Слухаємо відкриття будь-якої активності
+        Lampa.Listener.follow('activity', function (e) {
 
-            if (!Lampa.Storage.get('hide_pg_rating', false)) return;
+            if (!Lampa.Storage.get('cardify_hide_pg', false)) return;
+            if (!e.object || !e.object.activity) return;
 
             setTimeout(function () {
-
-                if (!e.object || !e.object.activity) return;
 
                 var render = e.object.activity.render();
                 if (!render) return;
 
-                // Скрываем возрастной рейтинг
-                render.find('.full-start__pg').hide();
+                // Перевіряємо що це саме Cardify
+                if (render.find('.full-start-new').length) {
+                    render.find('.full-start__pg').hide();
+                }
 
-            }, 0);
+            }, 100);
         });
 
-        console.log('PG Rating Hider loaded');
+        console.log('Cardify PG Hider loaded');
     }
 
     if (window.appready) startPlugin();
