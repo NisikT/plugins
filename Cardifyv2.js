@@ -995,8 +995,7 @@
 						render.find(".full-start-new__rate-line.rate-fix").hide();
 					}
 
-          render.find('.full-start__pg').hide();
-          }
+                      render.find('.full-start__pg').remove();
           
 					this.loadOriginalPoster(e, render);
 
