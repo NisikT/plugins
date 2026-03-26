@@ -71,7 +71,6 @@
         var render = e.object.activity.render();
         var component = e.object.activity.component;
         var data = e.data && e.data.movie ? e.data.movie : (e.object && e.object.card ? e.object.card : null);        
-        }
 
         var details = render.find(".full-start-new__details");
         if (details.length) {
