@@ -70,21 +70,7 @@
     function applyCardifyUI(e) {
         var render = e.object.activity.render();
         var component = e.object.activity.component;
-        var data = e.data && e.data.movie ? e.data.movie : (e.object && e.object.card ? e.object.card : null);
-
-        // --- ЯДЕРНИЙ УДАР ПО РАМКАХ LAMPA (JS) ---
-        if (window.innerWidth <= 768) {
-            setTimeout(function() {
-                var $render = $(render);
-                
-                // 1. Вбиваємо відступи головного контейнера екрану
-                $render.parents('.activity__body').first().attr('style', 'padding-left: 0 !important; padding-right: 0 !important; overflow-x: hidden !important; width: 100vw !important;');
-                
-                // 2. Вбиваємо сірий фон, кути та відступи першого блоку (де лежить наш плагін)
-                $render.parents('.scroll__item').first().attr('style', 'background: transparent !important; padding: 0 !important; margin: 0 !important; width: 100vw !important; border-radius: 0 !important; box-shadow: none !important;');
-                
-                // 3. Робимо всі нижні блоки (Актори, Схожі) гарантовано темними
-                $render.parents('.scroll__item').first().nextAll('.scroll__item').attr('style', 'background: #141414 !important; padding: 1.5em !important; width: 100vw !important; border-radius: 0 !important;');        
+        var data = e.data && e.data.movie ? e.data.movie : (e.object && e.object.card ? e.object.card : null);        
         }
 
         var details = render.find(".full-start-new__details");
