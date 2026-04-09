@@ -11,11 +11,6 @@
     'HD': pluginPath + 'Quality_ico/HD.svg',
     'HDR': pluginPath + 'Quality_ico/HDR.svg',
     'Dolby Vision': pluginPath + 'Quality_ico/Dolby Vision.svg',
-    '7.1': pluginPath + 'Quality_ico/7.1.svg',
-    '5.1': pluginPath + 'Quality_ico/5.1.svg',
-    '4.0': pluginPath + 'Quality_ico/4.0.svg',
-    '2.0': pluginPath + 'Quality_ico/2.0.svg',
-    'DUB': pluginPath + 'Quality_ico/DUB.svg'
   };
 
   function getBest(results) {
