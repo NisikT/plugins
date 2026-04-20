@@ -215,13 +215,13 @@
                     // Отображаем информацию о вышедших сериях
                     displaySeasons = airedSeasons;
                     displayEpisodes = airedEpisodes;
-                    seasonsText = plural(displaySeasons, 'сезон', 'сезону', 'сезонів');
+                    seasonsText = plural(displaySeasons, 'сезон', 'сезони', 'сезонів');
                     episodesText = plural(displayEpisodes, 'серія', 'серії', 'серій');
                 } else if (InterFaceMod.settings.seasons_info_mode === 'total') {
                     // Отображаем полное количество серий и сезонов
                     displaySeasons = totalSeasons;
                     displayEpisodes = totalEpisodes;
-                    seasonsText = plural(displaySeasons, 'сезон', 'сезону', 'сезонів');
+                    seasonsText = plural(displaySeasons, 'сезон', 'сезони', 'сезонів');
                     episodesText = plural(displayEpisodes, 'серія', 'серії', 'серій');
                 } else {
                     return; // Режим "Выключить" - не отображаем информацию
