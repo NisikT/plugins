@@ -84,7 +84,7 @@
                             airedEpisodes += seasonEpisodes;
                         }
                         
-                        console.log('Сезон ' + season.season_number + ': вышло ' + seasonEpisodes + ' из ' + (season.episode_count || 0) + ' серий');
+                        console.log('Сезон ' + season.season_number + ': вийшло ' + seasonEpisodes + ' з ' + (season.episode_count || 0) + ' серій');
                     });
                 } else if (movie.last_episode_to_air) {
                     // Альтернативный способ определения по последнему вышедшему эпизоду
@@ -100,7 +100,7 @@
                         var lastSeason = movie.last_episode_to_air.season_number;
                         var lastEpisode = movie.last_episode_to_air.episode_number;
                         
-                        console.log('Последний вышедший: сезон ' + lastSeason + ', эпизод ' + lastEpisode);
+                        console.log('Найостанніший: сезон ' + lastSeason + ', епізод ' + lastEpisode);
                         
                         // Считаем вышедшие эпизоды более точно, если есть информация о сезонах
                         if (movie.seasons) {
@@ -199,11 +199,11 @@
                 
                 // Функция для перевода статуса сериала на русский
                 function getStatusText(status) {
-                    if (status === 'Ended') return 'Завершён';
-                    if (status === 'Canceled') return 'Отменён';
-                    if (status === 'Returning Series') return 'Выходит';
-                    if (status === 'In Production') return 'В производстве';
-                    return status || 'Неизвестно';
+                    if (status === 'Ended') return 'Завершено';
+                    if (status === 'Canceled') return 'Скасовано';
+                    if (status === 'Returning Series') return 'Виходить';
+                    if (status === 'In Production') return 'У виробництві';
+                    return status || 'Невідомо';
                 }
                 
                 // Выбираем, какую информацию отображать в зависимости от настройки
@@ -215,14 +215,14 @@
                     // Отображаем информацию о вышедших сериях
                     displaySeasons = airedSeasons;
                     displayEpisodes = airedEpisodes;
-                    seasonsText = plural(displaySeasons, 'сезон', 'сезона', 'сезонов');
-                    episodesText = plural(displayEpisodes, 'серия', 'серии', 'серий');
+                    seasonsText = plural(displaySeasons, 'сезон', 'сезону', 'сезонів');
+                    episodesText = plural(displayEpisodes, 'серія', 'серії', 'серій');
                 } else if (InterFaceMod.settings.seasons_info_mode === 'total') {
                     // Отображаем полное количество серий и сезонов
                     displaySeasons = totalSeasons;
                     displayEpisodes = totalEpisodes;
-                    seasonsText = plural(displaySeasons, 'сезон', 'сезона', 'сезонов');
-                    episodesText = plural(displayEpisodes, 'серия', 'серии', 'серий');
+                    seasonsText = plural(displaySeasons, 'сезон', 'сезону', 'сезонів');
+                    episodesText = plural(displayEpisodes, 'серія', 'серії', 'серій');
                 } else {
                     return; // Режим "Выключить" - не отображаем информацию
                 }
@@ -248,7 +248,7 @@
                         if (totalEpisodes > 0 && airedEpisodes < totalEpisodes) {
                             // Проверяем, что у нас действительно есть актуальные данные о вышедших сериях
                             if (airedEpisodes > 0) {
-                                text = displaySeasons + ' ' + seasonsText + ' ' + airedEpisodes + ' ' + episodesText + ' из ' + totalEpisodes;
+                                text = displaySeasons + ' ' + seasonsText + ' ' + airedEpisodes + ' ' + episodesText + ' з ' + totalEpisodes;
                             } else {
                                 // Если данных о вышедших сериях нет, просто показываем общее количество
                                 text = displaySeasons + ' ' + seasonsText + ' ' + totalEpisodes + ' ' + episodesText;
@@ -263,10 +263,10 @@
                     }
                     
                     // Дополнительная отладочная информация
-                    console.log('Режим отображения:', InterFaceMod.settings.seasons_info_mode);
-                    console.log('Вышедшие серии:', airedEpisodes);
-                    console.log('Всего серий:', totalEpisodes);
-                    console.log('Отображаемый текст:', text);
+                    console.log('Режим відображення:', InterFaceMod.settings.seasons_info_mode);
+                    console.log('Випущені серії:', airedEpisodes);
+                    console.log('Всього серій:', totalEpisodes);
+                    console.log('Виведений текст:', text);
                     
                     infoElement.append($('<div></div>').text(text));
                 }
@@ -330,7 +330,7 @@
                 
                 // Добавляем элемент на постер и информацию в консоль для отладки
                 setTimeout(function() {
-                    console.log('Информация о сериале:', {
+                    console.log('Інформація про серіал:', {
                         title: movie.title || movie.name,
                         status: status,
                         totalSeasons: totalSeasons,
