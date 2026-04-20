@@ -1897,9 +1897,7 @@
             if (event.type === 'ready') {
                 startPlugin();
             }
-        });
-    }
-
+			
     // Регистрация плагина в манифесте
     Lampa.Manifest.plugins = {
         name: 'Интерфейс мод',
