@@ -1618,7 +1618,7 @@
         // Регистрируем плагин в Lampa
         Lampa.SettingsApi.addComponent({
             component: 'season_info',
-            name: 'Интерфейс мод',
+            name: 'Інтерфейс мод',
             icon: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 5C4 4.44772 4.44772 4 5 4H19C19.5523 4 20 4.44772 20 5V7C20 7.55228 19.5523 8 19 8H5C4.44772 8 4 7.55228 4 7V5Z" fill="currentColor"/><path d="M4 11C4 10.4477 4.44772 10 5 10H19C19.5523 10 20 10.4477 20 11V13C20 13.5523 19.5523 14 19 14H5C4.44772 14 4 13.5523 4 13V11Z" fill="currentColor"/><path d="M4 17C4 16.4477 4.44772 16 5 16H19C19.5523 16 20 16.4477 20 17V19C20 19.5523 19.5523 20 19 20H5C4.44772 20 4 19.5523 4 19V17Z" fill="currentColor"/></svg>'
         });
         
@@ -1630,8 +1630,8 @@
                 component: 'about' 
             },
             field: {
-                name: 'О плагине',
-                description: 'Информация и поддержка'
+                name: 'Про плагін',
+                description: 'Інформація'
             },
             onChange: showAbout
         });
@@ -1642,15 +1642,15 @@
                 name: 'seasons_info_mode',
                 type: 'select',
                 values: {
-                    'none': 'Выключить',
-                    'aired': 'Актуальная информация',
-                    'total': 'Полное количество'
+                    'none': 'Вимкнути',
+                    'aired': 'Актуальна інформація',
+                    'total': 'Загальна кількість'
                 },
                 default: 'aired'
             },
             field: {
-                name: 'Информация о сериях',
-                description: 'Выберите как отображать информацию о сериях и сезонах'
+                name: 'Інформація про серії',
+                description: 'Виберіть як відображати інформацію про серії та сезони'
             },
             onChange: function (value) {
                 InterFaceMod.settings.seasons_info_mode = value;
@@ -1674,23 +1674,23 @@
                 name: 'label_position',
                 type: 'select',
                 values: {
-                    'top-right': 'Верхний правый угол',
-                    'top-left': 'Верхний левый угол',
-                    'bottom-right': 'Нижний правый угол',
-                    'bottom-left': 'Нижний левый угол'
+                    'top-right': 'Верхній правий кут',
+                    'top-left': 'Верхній лівий кут',
+                    'bottom-right': 'Нижній правий кут',
+                    'bottom-left': 'Нижній лівий кут'
                 },
                 default: 'top-right'
             },
             field: {
-                name: 'Расположение лейбла о сериях',
-                description: 'Выберите позицию лейбла на постере'
+                name: 'Розташування мітки на серіях',
+                description: 'Виберіть розташування мітки на постері'
             },
             onChange: function (value) {
                 InterFaceMod.settings.label_position = value;
                 Lampa.Settings.update();
                 
                 // Уведомление о необходимости перезагрузить страницу для применения изменений
-                Lampa.Noty.show('Для применения изменений откройте карточку сериала заново');
+                Lampa.Noty.show('Щоб застосувати зміни відкрийте картку серіалу знову');
             }
         });
         
@@ -1702,13 +1702,13 @@
                 default: true
             },
             field: {
-                name: 'Показывать все кнопки',
-                description: 'Отображать все кнопки действий в карточке'
+                name: 'Показувати всі кнопки',
+                description: 'Відображати всі кнопки дій у картці'
             },
             onChange: function (value) {
                 InterFaceMod.settings.show_buttons = value;
                 Lampa.Settings.update();
-                console.log('InterfaceMod: Отображение кнопок ' + (value ? 'включено' : 'отключено'));
+                console.log('InterfaceMod: Відображення кнопок ' + (value ? 'увімкнено' : 'відключено'));
             }
         });
         
@@ -1720,8 +1720,8 @@
                 default: true
             },
             field: {
-                name: 'Изменить лейблы типа',
-                description: 'Изменить "TV" на "Сериал" и добавить лейбл "Фильм"'
+                name: 'Змінити мітки типу',
+                description: 'Змінити "TV" на "Серіал" та добавити мітку "Фільм"'
             },
             onChange: function (value) {
                 InterFaceMod.settings.show_movie_type = value;
@@ -1735,7 +1735,7 @@
                 name: 'theme_select',
                 type: 'select',
                 values: {
-                    default: 'Нет',
+                    default: 'Немає',
                     bywolf_mod: 'Bywolf_mod',
                     dark_night: 'Dark Night bywolf',
                     blue_cosmos: 'Blue Cosmos',
@@ -1747,8 +1747,8 @@
                 default: 'default'
             },
             field: {
-                name: 'Тема интерфейса',
-                description: 'Выберите тему оформления интерфейса'
+                name: 'Тема інтерфейсу',
+                description: 'Оберіть тему оформлення інтерфейсу'
             },
             onChange: function(value) {
                 InterFaceMod.settings.theme = value;
@@ -1765,8 +1765,8 @@
                 default: true
             },
             field: {
-                name: 'Цветные рейтинги',
-                description: 'Изменять цвет рейтинга в зависимости от оценки'
+                name: 'Кольорові рейтинги',
+                description: 'Змінювати колір рейтингу залежно від оцінки'
             },
             onChange: function (value) {
                 // Сохраняем текущий активный элемент
@@ -1804,8 +1804,8 @@
                 default: true
             },
             field: {
-                name: 'Цветные элементы',
-                description: 'Отображать статусы сериалов и возрастные ограничения цветными'
+                name: 'Кольорові елементи',
+                description: 'Відображати статуси серіалів та вікові обмеження кольорами'
             },
             onChange: function (value) {
                 InterFaceMod.settings.colored_elements = value;
@@ -1904,9 +1904,9 @@
 
     // Регистрация плагина в манифесте
     Lampa.Manifest.plugins = {
-        name: 'Интерфейс мод',
+        name: 'Інтерфейс мод',
         version: '2.2.0',
-        description: 'Улучшенный интерфейс для приложения Lampa'
+        description: 'Покращений інтерфейс для додатка Lampa'
     };
 
     // Экспортируем объект плагина для внешнего доступа
