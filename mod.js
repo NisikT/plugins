@@ -1629,10 +1629,7 @@
                 type: 'button',
                 component: 'about' 
             },
-            field: {
-                name: 'О плагине',
-                description: 'Информация и поддержка'
-            },
+            
             onChange: showAbout
         });
         
